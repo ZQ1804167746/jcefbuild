@@ -1,5 +1,4 @@
 @echo off
-
 if ("%2"=="") ( ^ 
     echo "Usage: compile_windows.bat <architecture> <buildType> [<gitrepo> <gitref>]" && ^ 
     echo "" && ^ 
@@ -9,21 +8,21 @@ if ("%2"=="") ( ^
     echo "gitref: the git commit id to pull" && ^ 
     exit 1 ^ 
 )
-
 cd /D "%~dp0"
-
 ::Determine repository and ref to pull from
 if ("%3"=="") (set "REPO=https://bitbucket.org/chromiumembedded/java-cef.git") ^
 else (set "REPO=%3")
 if ("%4"=="") (set "REF=master") ^
 else (set "REF=%4")
 
+:: Set GN_DEFINES to enable proprietary codecs (H.264/AAC support)
+set "GN_DEFINES=proprietary_codecs=true ffmpeg_branding=Chrome"
+
 :: Execute build with windows Dockerfile
 docker build -t jcefbuild --file DockerfileWindows .
-
 :: Execute run with windows Dockerfile
 if not exist "jcef" mkdir "jcef"
 rmdir /S /Q out
 mkdir "out"
-docker run --name jcefbuild -v jcef:"C:\jcef" -e TARGETARCH=%1 -e BUILD_TYPE=%2 -e REPO=%REPO% -e REF=%REF% jcefbuild
+docker run --name jcefbuild -v jcef:"C:\jcef" -e TARGETARCH=%1 -e BUILD_TYPE=%2 -e REPO=%REPO% -e REF=%REF% -e GN_DEFINES=%GN_DEFINES% jcefbuild
 docker cp jcefbuild:/out/binary_distrib.tar.gz out/binary_distrib.tar.gz
