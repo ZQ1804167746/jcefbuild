@@ -16,7 +16,7 @@ if ("%4"=="") (set "REF=master") ^
 else (set "REF=%4")
 
 :: Set GN_DEFINES to enable proprietary codecs (H.264/AAC support)
-set "GN_DEFINES=proprietary_codecs=true ffmpeg_branding=Chrome"
+set GN_DEFINES=proprietary_codecs=true ffmpeg_branding=Chrome
 
 :: Execute build with windows Dockerfile
 docker build -t jcefbuild --file DockerfileWindows .
@@ -24,5 +24,5 @@ docker build -t jcefbuild --file DockerfileWindows .
 if not exist "jcef" mkdir "jcef"
 rmdir /S /Q out
 mkdir "out"
-docker run --name jcefbuild -v jcef:"C:\jcef" -e TARGETARCH=%1 -e BUILD_TYPE=%2 -e REPO=%REPO% -e REF=%REF% -e GN_DEFINES=%GN_DEFINES% jcefbuild
+docker run --name jcefbuild -v jcef:"C:\jcef" -e TARGETARCH=%1 -e BUILD_TYPE=%2 -e REPO=%REPO% -e REF=%REF% -e "GN_DEFINES=%GN_DEFINES%" jcefbuild
 docker cp jcefbuild:/out/binary_distrib.tar.gz out/binary_distrib.tar.gz
